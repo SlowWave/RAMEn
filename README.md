@@ -1,2 +1,2 @@
 # RAMEn
-# Resonant Attractors and chaotic Maps Environments
+# Remarkable Attractors and chaotic Maps Environments
