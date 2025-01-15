@@ -12,7 +12,7 @@ class DynamicSystem:
         Base class for all other dynamic systems classes.
 
         Args:
-        None
+            None
         """
 
         # initialize attributes
@@ -20,6 +20,7 @@ class DynamicSystem:
         self.input_boundaries = None
         self.state_dim = None
         self.input_dim = None
+        self.integration_step = None
 
     def set_initial_state(self, state):
         """
@@ -173,6 +174,14 @@ class DynamicSystem:
 
         # propagate system states
         for step in range(len(time_steps) - 1):
+            
+            # update system state
+            current_state = self.simulation_step(
+                state=current_state,
+                inputs=[u[step] for u in inputs],
+            )
+            
+            
             # integration step
             ode_solution = solve_ivp(
                 fun=self.ode,
@@ -193,3 +202,28 @@ class DynamicSystem:
         data_dict = dict(time_steps=time_steps, states=states, inputs=inputs)
 
         return data_dict
+    
+    
+    def simulation_step(
+        self,
+        state,
+        input,
+        time=0.0,
+        method="RK45",
+        dense_output=False,
+    ):
+
+        # integration step
+        ode_solution = solve_ivp(
+            fun=self.ode,
+            t_span=(time, time + self.integration_step),
+            y0=state,
+            method=method,
+            dense_output=dense_output,
+            args=(input,),
+        )
+
+        # get updated state
+        updated_state = [state[-1] for state in ode_solution.y]
+
+        return updated_state
