@@ -28,3 +28,14 @@ model_id = 1
 
 # generic configs
 [dynamic_system]
+sigma = 10
+rho = 28
+beta = 2.6666666666666666666666666666666667
+state_dim = 3
+input_dim = 3
+state_boundaries = [[-20, -20, 0], [20, 20, 40]]
+input_boundaries = [[-20, -20, 0], [20, 20, 40]]
+
+# simulation configs
+[dynamic_system.simulation]
+integration_step = 0.01
