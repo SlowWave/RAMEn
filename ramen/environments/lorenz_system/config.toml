@@ -1,0 +1,30 @@
+# = = = = = = = = = = = = = = = = = = = = = = = = = #
+# GYMNASIUM ENVIRONMENT CONFIGS
+# = = = = = = = = = = = = = = = = = = = = = = = = = #
+
+# generic configs
+[gymnasium]
+epoch_time_horizon = 100                                    # [s]
+use_random_seed = false                                     # true, false
+random_seed = 0
+normalize_observation = true                                # true, false
+normalize_reward = true                                     # true, false
+
+# observation space
+[gymnasium.observation_space]
+model_id = 1
+
+# action space
+[gymnasium.action_space]
+model_id = 1
+
+# reward function
+[gymnasium.reward_function]
+model_id = 1
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = #
+# DYNAMIC SYSTEM CONFIGS
+# = = = = = = = = = = = = = = = = = = = = = = = = = #
+
+# generic configs
+[dynamic_system]
