@@ -1,36 +1,35 @@
 import os
 import sys
+import tomli
 
 # add parent directory to "sys.path" to import modules from that path
 sys.path.append(os.path.normpath(os.path.dirname(__file__) + os.sep + os.pardir))
 
 from modules.dynamic_system import DynamicSystem
 
+# get config data
+with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config_file:
+    CFG = tomli.load(config_file)
+
 
 class LorenzSystem(DynamicSystem):
-    def __init__(self, sigma=10, rho=28, beta=8/3):
+    def __init__(self):
         
         super(LorenzSystem, self).__init__()
         
-        # initialize attributes
-        self.sigma = sigma
-        self.rho = rho
-        self.beta = beta
-
+        # general attributes
+        self.sigma = CFG["dynamic_system"]["sigma"]
+        self.rho = CFG["dynamic_system"]["rho"]
+        self.beta = CFG["dynamic_system"]["beta"]
+        self.state_dim = CFG["dynamic_system"]["state_dim"]
+        self.input_dim = CFG["dynamic_system"]["input_dim"]
+        self.state_boundaries = CFG["dynamic_system"]["state_boundaries"]
+        self.input_boundaries = CFG["dynamic_system"]["input_boundaries"]
         self.tag = "LorenzSystem"
-        self.state_boundaries = [
-            [-20, -20, 0],
-            [20, 20, 40],
-        ]
+           
+        # simulation attributes
+        self.integration_step = CFG["dynamic_system"]["simulation"]["integration_step"]
 
-        self.input_boundaries = [
-            [-20, -20, 0],
-            [20, 20, 40],
-        ]
-        
-        self.state_dim = 3
-        self.input_dim = 3
-        self.integration_step = 0.01
 
     def ode(self, t, x, u):
         """
