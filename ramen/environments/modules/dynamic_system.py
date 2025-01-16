@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.integrate import solve_ivp
 
+import matplotlib.animation as animation
+from mpl_toolkits.mplot3d import Axes3D
 
 class DynamicSystem:
     def __init__(self):
@@ -85,7 +87,6 @@ class DynamicSystem:
     def simulate_system(
         self,
         time_horizon,
-        integration_step,
         initial_state=None,
         use_inputs=False,
         inputs_shape="random",
@@ -95,7 +96,6 @@ class DynamicSystem:
 
         Args:
             time_horizon (float): The duration of the simulation in seconds.
-            integration_step (float): The time step for the integration in seconds.
             initial_state (list, optional): The initial state of the system. If None, a random initial state is generated. Defaults to None.
             use_inputs (bool, optional): Flag indicating whether to use inputs or not. Defaults to False.
             inputs_shape (str, optional): The shape of the inputs. If 'random', generates random inputs. Defaults to "random".
@@ -104,13 +104,12 @@ class DynamicSystem:
         # propagate system dynamics
         data_dict = self.propagate_states(
             time_horizon,
-            integration_step,
             initial_state,
             use_inputs,
             inputs_shape,
         )
 
-        fig, axes = plt.subplots(len(data_dict["states"]) + (len(data_dict["inputs"]) if use_inputs else 0))
+        fig, axes = plt.subplots(len(data_dict["states"]))
 
         for i, state in enumerate(data_dict["states"]):
             axes[i].plot(
@@ -122,25 +121,33 @@ class DynamicSystem:
             axes[i].grid()
             axes[i].set_xlabel("Time [s]")
             axes[i].set_ylabel(f"$x_{i}$")
+        
+        fig.tight_layout()
+        fig.legend()
+        
         if use_inputs:
-            for j, input_signal in enumerate(data_dict["inputs"]):
-                axes[len(data_dict["states"]) + j].plot(
+
+            fig, axes = plt.subplots(len(data_dict["inputs"]))
+
+            for i, input_signal in enumerate(data_dict["inputs"]):
+                axes[i].plot(
                     data_dict["time_steps"],
                     input_signal,
-                    label=f"$u_{j}$",
-                    color=f"C{j+i+1}",
+                    label=f"$u_{i}$",
+                    color=f"C{i}",
                 )
-                axes[len(data_dict["states"]) + j].grid()
-                axes[len(data_dict["states"]) + j].set_xlabel("Time [s]")
-                axes[len(data_dict["states"]) + j].set_ylabel(f"$u_{j}$")
+                axes[i].grid()
+                axes[i].set_xlabel("Time [s]")
+                axes[i].set_ylabel(f"$u_{i}$")
         fig.tight_layout()
         fig.legend()
         plt.show()
+        
+        self.display_animation(data_dict)
 
     def propagate_states(
         self,
         time_horizon,
-        integration_step,
         initial_state,
         use_inputs,
         inputs_shape,
@@ -150,7 +157,6 @@ class DynamicSystem:
 
         Args:
             time_horizon (float): The duration of the simulation in seconds.
-            integration_step (float): The time step for the integration in seconds.
             initial_state (list): The initial state of the system.
             use_inputs (bool): Flag indicating whether to use inputs or not.
             inputs_shape (str): The shape of the inputs.
@@ -163,8 +169,8 @@ class DynamicSystem:
         """
 
         # define timing parameters
-        num_steps = math.ceil(time_horizon / integration_step)
-        time_horizon = num_steps * integration_step
+        num_steps = math.ceil(time_horizon / self.integration_step)
+        time_horizon = num_steps * self.integration_step
         time_steps = np.linspace(0.0, time_horizon, num_steps + 1)
 
         # set dynamic system states and inputs
@@ -178,22 +184,9 @@ class DynamicSystem:
             # update system state
             current_state = self.simulation_step(
                 state=current_state,
-                inputs=[u[step] for u in inputs],
+                input=[u[step] for u in inputs],
+                time=time_steps[step],
             )
-            
-            
-            # integration step
-            ode_solution = solve_ivp(
-                fun=self.ode,
-                t_span=(time_steps[step], time_steps[step + 1]),
-                y0=current_state,
-                method="RK45",
-                dense_output=False,
-                args=([u[step] for u in inputs],),
-            )
-
-            # update current state
-            current_state = [state[-1] for state in ode_solution.y]
 
             # update states list
             for idx, state in enumerate(states):
@@ -203,7 +196,6 @@ class DynamicSystem:
 
         return data_dict
     
-    
     def simulation_step(
         self,
         state,
@@ -212,6 +204,18 @@ class DynamicSystem:
         method="RK45",
         dense_output=False,
     ):
+        """_summary_
+
+        Args:
+            state (_type_): _description_
+            input (_type_): _description_
+            time (float, optional): _description_. Defaults to 0.0.
+            method (str, optional): _description_. Defaults to "RK45".
+            dense_output (bool, optional): _description_. Defaults to False.
+
+        Returns:
+            _type_: _description_
+        """
 
         # integration step
         ode_solution = solve_ivp(
@@ -227,3 +231,46 @@ class DynamicSystem:
         updated_state = [state[-1] for state in ode_solution.y]
 
         return updated_state
+    
+    def display_animation(self, data_dict):
+        
+        # Extract state data
+        x_data, y_data, z_data = data_dict["states"]
+        time_steps = data_dict["time_steps"]
+
+        # Set up the figure and 3D axis
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+        ax.set_xlim(min(x_data), max(x_data))
+        ax.set_ylim(min(y_data), max(y_data))
+        ax.set_zlim(min(z_data), max(z_data))
+        ax.set_xlabel("$x$")
+        ax.set_ylabel("$y$")
+        ax.set_zlabel("$z$")
+        ax.set_title("3D Animation of State Variables")
+
+        # Initialize line and point
+        line, = ax.plot([], [], [], lw=2, label="Trajectory")
+        point, = ax.plot([], [], [], 'ro', label="Current Position")
+
+        def init():
+            line.set_data([], [])
+            line.set_3d_properties([])
+            point.set_data([], [])
+            point.set_3d_properties([])
+            return line, point
+
+        def update(frame):
+            # Update the trajectory and current position
+            line.set_data(x_data[:frame], y_data[:frame])
+            line.set_3d_properties(z_data[:frame])
+            point.set_data([x_data[frame]], [y_data[frame]])  # Wrap in a list
+            point.set_3d_properties([z_data[frame]])         # Wrap in a list
+            return line, point
+
+        anim = animation.FuncAnimation(
+            fig, update, frames=len(time_steps), init_func=init, blit=False, interval=0.001
+        )
+
+        plt.legend()
+        plt.show()
