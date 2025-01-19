@@ -6,21 +6,19 @@
 [gymnasium]
 epoch_time_horizon = 100                                    # [s]
 use_random_seed = false                                     # true, false
-random_seed = 0
-normalize_observation = true                                # true, false
-normalize_reward = true                                     # true, false
+random_seed = 0                                             # int
 
 # observation space
 [gymnasium.observation_space]
-model_id = 1
+model_id = 1                                                # int
 
 # action space
 [gymnasium.action_space]
-model_id = 1
+model_id = 1                                                # int
 
 # reward function
 [gymnasium.reward_function]
-model_id = 1
+model_id = 1                                                # int
 
 # = = = = = = = = = = = = = = = = = = = = = = = = = #
 # DYNAMIC SYSTEM CONFIGS
