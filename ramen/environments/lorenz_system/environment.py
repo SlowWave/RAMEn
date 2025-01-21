@@ -109,6 +109,7 @@ class LorenzEnv(gym.Env):
             "state": state,
             "input": np.array([[0.0], [0.0], [0.0]]),
             "time": np.array([0.0]),
+            "equilibrium_points": self.system_model.equilibrium_points,
         }
 
 
