@@ -50,12 +50,7 @@ class ObservationSpaceModel():
                 np.finfo(np.float32).max,   # state difference [0]
                 np.finfo(np.float32).max,   # state difference [1]
                 np.finfo(np.float32).max,   # state difference [2]
-                np.finfo(np.float32).max,   # distance from eq point 1 [0]
-                np.finfo(np.float32).max,   # distance from eq point 1 [1]
-                np.finfo(np.float32).max,   # distance from eq point 1 [2]
-                np.finfo(np.float32).max,   # distance from eq point 2 [0]
-                np.finfo(np.float32).max,   # distance from eq point 2 [1]
-                np.finfo(np.float32).max,   # distance from eq point 2 [2]
+                np.finfo(np.float32).max,   # distance from eq point
             ],
             dtype=np.float32,
         )
@@ -69,10 +64,37 @@ class ObservationSpaceModel():
 
         return observation_space
 
-    def _observation_1(self, state):
+    def _observation_1(self, simulation_data):
 
-        obs = state
-        return obs
+        # get states
+        state_1 = simulation_data["state"][-1][0]
+        state_2 = simulation_data["state"][-1][1]
+        state_3 = simulation_data["state"][-1][2]
+
+        # get state differences
+        state_diff_1 = state_1 - simulation_data["state"][-2][0]
+        state_diff_2 = state_2 - simulation_data["state"][-2][1]
+        state_diff_3 = state_3 - simulation_data["state"][-2][2]
+
+        # get distance from equilibrium point
+        state = np.array([state_1, state_2, state_3])
+        eq_point = np.array(simulation_data["equilibrium_points"][1])
+        d_eq = np.linalg.norm(state - eq_point)
+
+        obseration = np.array(
+            [
+                state_1,
+                state_2,
+                state_3,
+                state_diff_1,
+                state_diff_2,
+                state_diff_3,
+                d_eq,
+            ],
+            dtype=np.float32,
+        )
+
+        return obseration
 
     def _observation_model_2(self):
 
