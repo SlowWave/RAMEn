@@ -24,7 +24,7 @@ class DynamicSystem:
         self.input_dim = None
         self.integration_step = None
 
-    def set_initial_state(self, state):
+    def set_initial_state(self, state=None):
         """
         Sets the initial state of the dynamic system.
 
@@ -124,6 +124,7 @@ class DynamicSystem:
         
         fig.tight_layout()
         fig.legend()
+        # plt.show()
         
         if use_inputs:
 
