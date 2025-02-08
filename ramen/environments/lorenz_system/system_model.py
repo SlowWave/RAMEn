@@ -6,7 +6,7 @@ import math
 # add parent directory to "sys.path" to import modules from that path
 sys.path.append(os.path.normpath(os.path.dirname(__file__) + os.sep + os.pardir))
 
-from modules.dynamic_system_copy import DynamicSystem
+from modules.dynamic_system import DynamicSystem
 
 # get config data
 with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config_file:
@@ -36,7 +36,7 @@ class LorenzSystem(DynamicSystem):
 
     def ode(self, t, x, u):
         """
-        Calculates the derivative of the state variables of the dynamic system.
+        Computes the derivative of the state variables of the Lorenz system.
 
         Args:
             t (float): The current time.
@@ -56,6 +56,12 @@ class LorenzSystem(DynamicSystem):
         return x_dot
     
     def _get_equlibrium_points(self):
+        """
+        Returns the equilibrium points of the Lorenz system
+
+        Returns:
+            list: List of equilibrium points
+        """
         
         eq_1 = [0.0, 0.0, 0.0]
         eq_2 = [
