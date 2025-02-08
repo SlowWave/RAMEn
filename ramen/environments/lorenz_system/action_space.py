@@ -4,7 +4,7 @@ import numpy as np
 from gymnasium import spaces
 
 # get config data
-with open(os.path.join(os.path.dirname(os.path.dirname(__file__)),"config.toml"), "rb") as config_file:
+with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config_file:
     CFG = tomli.load(config_file)
 
 
