@@ -15,17 +15,20 @@ with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config
 class LorenzEnv(gym.Env):
     def __init__(self):
 
+        # general attributes
         self.epoch_time_horizon = CFG["gymnasium"]["epoch_time_horizon"]
         self.episode_time_step = CFG["dynamic_system"]["simulation"]["integration_step"]
         self.use_random_seed = CFG["gymnasium"]["use_random_seed"]
         self.random_seed = CFG["gymnasium"]["random_seed"]
 
+        # gymnasium attributes
         self.observation_space_model = ObservationSpaceModel()
         self.action_space_model = ActionSpaceModel()
         self.reward_function_model = RewardFunctionModel()        
         self.observation_space = self.observation_space_model.get_observation_space()
         self.action_space = self.action_space_model.get_action_space()
 
+        # system attributes
         self.system_model = LorenzSystem()
         self.simulation_data = None
         self.is_last_step = False
@@ -48,7 +51,6 @@ class LorenzEnv(gym.Env):
         info = {}
     
         return observation, info
-
 
     def step(self, action):
     
@@ -89,10 +91,10 @@ class LorenzEnv(gym.Env):
     
     def _simulation_step(self, input):
         
-        # collect states
+        # collect last system state
         state = [state[-1] for state in self.simulation_data["state"]]
         
-        # get new state
+        # perform simulation step
         state = self.system_model.simulation_step(state, input)
         
         # upate simulation data
@@ -102,28 +104,48 @@ class LorenzEnv(gym.Env):
         if self.simulation_data["time"][-1] >= self.epoch_time_horizon:
             self.is_last_step = True
     
-
     def _initialize_simulation_data(self, state):
         
+        # initialize simulation data
         self.simulation_data = {
-            "state": state,
+            "state": np.array(state).reshape(-1, 1),
             "input": np.array([[0.0], [0.0], [0.0]]),
             "time": np.array([0.0]),
             "equilibrium_points": self.system_model.equilibrium_points,
         }
 
-
     def _update_simulation_data(self, state, input, observation=None):
         
+        # update simulation data
         self.simulation_data["state"] = np.concatenate(
-            (self.simulation_data["state"], state),
+            (
+                self.simulation_data["state"],
+                np.array(state).reshape(-1, 1)
+            ),
             axis=1,
         )
         self.simulation_data["input"] = np.concatenate(
-            (self.simulation_data["input"], input),
+            (
+                self.simulation_data["input"],
+                np.array(input).reshape(-1, 1)
+            ),
             axis=1,
         )
         self.simulation_data["time"] = np.append(
             self.simulation_data["time"],
             self.simulation_data["time"][-1] + self.episode_time_step,
         )
+
+if __name__ == "__main__":
+    
+    # create environment
+    lorenz_env = LorenzEnv()
+    
+    # reset environment
+    lorenz_env.reset()
+
+    # for loop
+    for i in range(10):
+
+        # step environment
+        lorenz_env.step([0.0, 0.0, 0.0])
