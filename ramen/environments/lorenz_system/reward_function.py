@@ -4,14 +4,7 @@ import numpy as np
 
 
 # get config data
-with open(
-    os.path.join(
-        os.path.dirname(os.path.dirname(__file__)),
-            "configs",
-            "config.toml"
-        ),
-        "rb"
-) as config_file:
+with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config_file:
     CFG = tomli.load(config_file)
 
 
