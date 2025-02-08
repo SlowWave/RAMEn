@@ -8,7 +8,6 @@ with open(os.path.join(os.path.dirname(__file__),"config.toml"), "rb") as config
     CFG = tomli.load(config_file)
 
 
-
 class ObservationSpaceModel():
     def __init__(self):
 
@@ -32,12 +31,12 @@ class ObservationSpaceModel():
         
         return self.observation_model_map[self.model_id]()
 
-    def get_observation(self):
+    def get_observation(self, simulation_data):
 
         if self.model_id not in self.observation_model_map:
             raise ValueError(f"Unsupported model_id: {self.model_id} for obsevation space")
         
-        return self.observation_model_map[self.model_id]()
+        return self.observation_map[self.model_id](simulation_data)
 
     def _observation_model_1(self):
 
@@ -67,14 +66,20 @@ class ObservationSpaceModel():
     def _observation_1(self, simulation_data):
 
         # get states
-        state_1 = simulation_data["state"][-1][0]
-        state_2 = simulation_data["state"][-1][1]
-        state_3 = simulation_data["state"][-1][2]
+        state_1 = simulation_data["state"][:, -1][0]
+        state_2 = simulation_data["state"][:, -1][1]
+        state_3 = simulation_data["state"][:, -1][2]
 
         # get state differences
-        state_diff_1 = state_1 - simulation_data["state"][-2][0]
-        state_diff_2 = state_2 - simulation_data["state"][-2][1]
-        state_diff_3 = state_3 - simulation_data["state"][-2][2]
+        if simulation_data["state"].shape[1] > 1:
+            state_diff_1 = state_1 - simulation_data["state"][:, -2][0]
+            state_diff_2 = state_2 - simulation_data["state"][:, -2][1]
+            state_diff_3 = state_3 - simulation_data["state"][:, -2][2]
+
+        else:
+            state_diff_1 = 0.0
+            state_diff_2 = 0.0
+            state_diff_3 = 0.0
 
         # get distance from equilibrium point
         state = np.array([state_1, state_2, state_3])
