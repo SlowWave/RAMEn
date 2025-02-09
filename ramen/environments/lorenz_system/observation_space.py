@@ -101,23 +101,19 @@ class ObservationSpaceModel():
 
         return obseration
 
+    # * Note: the following method is a copy of _observation_model_1, please modify if needed
     def _observation_model_2(self):
 
         # define observation space limits
         observation_limit = np.array(
             [
-                1,                          # mrp tracking error [0]
-                1,                          # mrp tracking error [1]
-                1,                          # mrp tracking error [2]
-                np.finfo(np.float32).max,   # omega tracking error [0]
-                np.finfo(np.float32).max,   # omega tracking error [1]
-                np.finfo(np.float32).max,   # omega tracking error [2]
-                np.finfo(np.float32).max,   # feedback control signal [0]
-                np.finfo(np.float32).max,   # feedback control signal [1]
-                np.finfo(np.float32).max,   # feedback control signal [2]
-                0.5,                        # last rl agent action [0]
-                0.5,                        # last rl agent action [1]
-                0.5,                        # last rl agent action [2]
+                np.finfo(np.float32).max,   # state [0]
+                np.finfo(np.float32).max,   # state [1]
+                np.finfo(np.float32).max,   # state [2]
+                np.finfo(np.float32).max,   # state difference [0]
+                np.finfo(np.float32).max,   # state difference [1]
+                np.finfo(np.float32).max,   # state difference [2]
+                np.finfo(np.float32).max,   # distance from eq point
             ],
             dtype=np.float32,
         )
@@ -130,9 +126,42 @@ class ObservationSpaceModel():
         )
 
         return observation_space
-    
-    
-    def _observation_2(self, state):
-        
-        obs = state
-        return obs
+
+    # * Note: the following method is a copy of _observation_1, please modify if needed
+    def _observation_2(self, simulation_data):
+
+        # get states
+        state_1 = simulation_data["state"][:, -1][0]
+        state_2 = simulation_data["state"][:, -1][1]
+        state_3 = simulation_data["state"][:, -1][2]
+
+        # get state differences
+        if simulation_data["state"].shape[1] > 1:
+            state_diff_1 = state_1 - simulation_data["state"][:, -2][0]
+            state_diff_2 = state_2 - simulation_data["state"][:, -2][1]
+            state_diff_3 = state_3 - simulation_data["state"][:, -2][2]
+
+        else:
+            state_diff_1 = 0.0
+            state_diff_2 = 0.0
+            state_diff_3 = 0.0
+
+        # get distance from equilibrium point
+        state = np.array([state_1, state_2, state_3])
+        eq_point = np.array(simulation_data["equilibrium_points"][1])
+        d_eq = np.linalg.norm(state - eq_point)
+
+        obseration = np.array(
+            [
+                state_1,
+                state_2,
+                state_3,
+                state_diff_1,
+                state_diff_2,
+                state_diff_3,
+                d_eq,
+            ],
+            dtype=np.float32,
+        )
+
+        return obseration
