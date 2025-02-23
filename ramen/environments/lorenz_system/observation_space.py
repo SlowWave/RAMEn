@@ -101,7 +101,7 @@ class ObservationSpaceModel():
 
         return observation
 
-    # * Note: the following method is a copy of _observation_model_1, please modify if needed
+    # * Note: the following method is a copy of _observation_model_1, please modify it if needed
     def _observation_model_2(self):
 
         # define observation space limits
@@ -127,7 +127,7 @@ class ObservationSpaceModel():
 
         return observation_space
 
-    # * Note: the following method is a copy of _observation_1, please modify if needed
+    # * Note: the following method is a copy of _observation_1, please modify it if needed
     def _observation_2(self, simulation_data):
 
         # get states
