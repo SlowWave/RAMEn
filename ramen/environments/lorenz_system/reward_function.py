@@ -25,7 +25,10 @@ class RewardFunctionModel():
 
     def _model_1(self, simulation_data):
 
-        reward_1 = 0
+        target_distance = 10
+        slope = 5
+
+        reward_1 = slope * np.pi ** 2 / 8 - slope * (np.atan(target_distance - simulation_data["observation"][:, -1][6])) ** 2
 
         is_last_reward = False
         rewards = [reward_1]
