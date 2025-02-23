@@ -86,7 +86,7 @@ class ObservationSpaceModel():
         eq_point = np.array(simulation_data["equilibrium_points"][1])
         d_eq = np.linalg.norm(state - eq_point)
 
-        obseration = np.array(
+        observation = np.array(
             [
                 state_1,
                 state_2,
@@ -99,7 +99,7 @@ class ObservationSpaceModel():
             dtype=np.float32,
         )
 
-        return obseration
+        return observation
 
     # * Note: the following method is a copy of _observation_model_1, please modify if needed
     def _observation_model_2(self):
@@ -151,7 +151,7 @@ class ObservationSpaceModel():
         eq_point = np.array(simulation_data["equilibrium_points"][1])
         d_eq = np.linalg.norm(state - eq_point)
 
-        obseration = np.array(
+        observation = np.array(
             [
                 state_1,
                 state_2,
@@ -164,4 +164,4 @@ class ObservationSpaceModel():
             dtype=np.float32,
         )
 
-        return obseration
+        return observation
