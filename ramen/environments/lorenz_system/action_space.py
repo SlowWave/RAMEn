@@ -31,12 +31,12 @@ class ActionSpaceModel():
         
         return self.action_model_map[self.model_id]()
     
-    def get_elaborated_action(self, action, storage):
+    def get_elaborated_action(self, action, simulation_data):
 
         if self.model_id not in self.action_elaboration_map:
             raise ValueError(f"Unsupported model_id: {self.model_id} for action space")
 
-        return self.action_elaboration_map[self.model_id](action, storage)
+        return self.action_elaboration_map[self.model_id](action, simulation_data)
 
     def _model_1(self):
 
