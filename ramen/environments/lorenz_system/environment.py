@@ -160,9 +160,9 @@ class LorenzEnv(gym.Env):
             )
 
         if reward is not None:
-            self.simulation_data["reward"] = np.concatenate(
-                (self.simulation_data["reward"], np.array(reward).reshape(-1, 1)),
-                axis=1,
+            self.simulation_data["reward"] = np.append(
+                self.simulation_data["reward"],
+                reward,
             )
 
 
