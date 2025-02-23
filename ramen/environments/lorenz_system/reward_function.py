@@ -19,9 +19,9 @@ class RewardFunctionModel():
 
         self.model_id = str(CFG["gymnasium"]["reward_function"]["model_id"])
 
-    def get_reward(self, storage):
+    def get_reward(self, simulation_data):
 
-        return self.reward_model_map[self.model_id](storage)
+        return self.reward_model_map[self.model_id](simulation_data)
 
     def _model_1(self, simulation_data):
 
