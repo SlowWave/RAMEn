@@ -74,6 +74,9 @@ class LorenzEnv(gym.Env):
         )
         reward = sum(rewards)
 
+        # update simulation data
+        self._update_simulation_data(reward=reward, observation=observation)
+
         # check termination condition
         if is_last_reward or self.is_last_step:
             terminated = True
