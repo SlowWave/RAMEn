@@ -23,19 +23,16 @@ class RewardFunctionModel():
 
         return self.reward_model_map[self.model_id](storage)
 
-    def _model_1(self, storage):
+    def _model_1(self, simulation_data):
 
-        if storage.angular_attitude_error[-1] < storage.angular_attitude_error[-2]:
-            reward_1 = 1
-        else:
-            reward_1 = -1
+        reward_1 = 0
 
         is_last_reward = False
         rewards = [reward_1]
 
         return is_last_reward, rewards
 
-    def _model_2(slef, storage):
+    def _model_2(slef, simulation_data):
 
         r1 = 0
         r2 = 3
