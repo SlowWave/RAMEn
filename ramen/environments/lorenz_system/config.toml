@@ -4,6 +4,7 @@
 
 # generic configs
 [gymnasium]
+env_id = "LorenzEnv-v0"                                     # str
 epoch_time_horizon = 100                                    # [s]
 use_random_seed = false                                     # true, false
 random_seed = 0                                             # int
