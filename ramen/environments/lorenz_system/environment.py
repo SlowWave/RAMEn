@@ -17,6 +17,7 @@ class LorenzEnv(gym.Env):
     def __init__(self):
 
         # general attributes
+        self.env_id = CFG["gymnasium"]["env_id"]
         self.epoch_time_horizon = CFG["gymnasium"]["epoch_time_horizon"]
         self.episode_time_step = CFG["dynamic_system"]["simulation"]["integration_step"]
         self.use_random_seed = CFG["gymnasium"]["use_random_seed"]
@@ -179,3 +180,5 @@ if __name__ == "__main__":
 
         # step environment
         lorenz_env.step(np.array([0.0, 0.0, 0.0]))
+
+    print(lorenz_env.simulation_data)
