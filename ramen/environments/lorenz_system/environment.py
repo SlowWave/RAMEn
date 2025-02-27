@@ -3,10 +3,10 @@ import tomli
 import gymnasium as gym
 import numpy as np
 
-from system_model import LorenzSystem
-from observation_space import ObservationSpaceModel
-from action_space import ActionSpaceModel
-from reward_function import RewardFunctionModel
+from .system_model import LorenzSystem
+from .observation_space import ObservationSpaceModel
+from .action_space import ActionSpaceModel
+from .reward_function import RewardFunctionModel
 
 # get config data
 with open(os.path.join(os.path.dirname(__file__), "config.toml"), "rb") as config_file:
